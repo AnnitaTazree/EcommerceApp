@@ -1,0 +1,113 @@
+﻿@model IEnumerable<EcommerceApp.Models.Product>
+@{
+    ViewData["Title"] = "Index";
+}
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor _httpContextAccessor
+
+@{
+    List<Product> productList = _httpContextAccessor.HttpContext.Session.GetObject<List<Product>>("cartQuantity");
+    double count = 0;
+    if (productList != null)
+    {
+        foreach (var item in productList)
+        {
+            count += item.Quantity;
+        }
+    }
+    else
+    {
+        productList = new List<Product>();
+    }
+}
+<style>
+    .qtyCount {
+        position: absolute;
+        top: -5px;
+        left: 30px;
+        color: #f00;
+    }
+</style>
+@if (Model != null && Model.Any())
+{
+    <div class="row">
+        <div class="col-10">
+            <h2>Shopping Cart</h2>
+        </div>
+        <div class="col-2">
+            <a asp-action="CartDetails" asp-controller="Shopping" style="text-decoration:none;float:right">
+                <div class="position-relative mt-3 mb-1">
+                    <img src="~/Images/cart.jpg" alt="cart" width="50px" class="img-fluid" /><span class="qtyCount">@count</span>
+                </div>
+            </a>
+        </div>
+    </div>
+}
+<div class="row mb-2">
+    <div class="col-12">
+        @if (TempData["msg"] != null)
+        {
+            <h2 class="alert alert-primary">@TempData["msg"]</h2>
+        }
+    </div>
+</div>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-3">
+            <div class="product-area">
+                <a asp-action="Details" asp-controller="Shopping" asp-route-id="@item.Id">
+                    <div class="product-img">
+                        @{
+                            var b64 = Convert.ToBase64String(item.Image);
+                            var imgSrc = String.Format("data:image/jpg;base64,{0}", b64);
+                        }
+                        <img src="@imgSrc" alt="Product Image" />
+                    </div>
+                    <p>Product Name: @Html.DisplayFor(x=>item.Name)</p>
+                    <p>Price: @Html.DisplayFor(x=>item.Price)</p>
+                </a>
+            </div>
+        </div>
+    }
+</div>
+@*<div class="row">
+    <div class="col">
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(x=>item.Name)</td>
+                        <td>@Html.DisplayFor(x=>item.Unit)</td>
+                        <td>@Html.DisplayFor(x=>item.Price)</td>
+                        <td>
+                            @{
+                                var b64 = Convert.ToBase64String(item.Image);
+                                var imgSrc = String.Format("data:image/jpg;base64,{0}", b64);
+                            }
+                            <img src="@imgSrc" alt="Product Image" style="width:50px;" />
+                        </td>
+                        <td>
+                            <form asp-action="AddToCart" asp-controller="Shopping" method="post" class="form-control">
+                                <input type="hidden" name="pid" value="@item.Id">
+                                <input type="number" name="qty" style="width:100px;" value="1" min="1" max="500">
+                                <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>*@
+

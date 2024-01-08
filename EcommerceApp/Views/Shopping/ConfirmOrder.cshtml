@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewData["Title"] = "ConfirmOrder";
+}
+@*<h1 class="display-4">Your order has been confirmed successfully, and we will promptly deliver your product.</h1>*@
+@model IEnumerable<EcommerceApp.Models.Product>
+@using EcommerceApp.Models;
+
+@{
+    ViewData["Title"] = "CartDetails";
+    double subtotal = 0;
+    double total = 0;
+    double subQty = 0;
+    double totalQty = 0;
+}
+
+<h2>Confirm Order</h2>
+<div class="border border-info p-2">
+    @if (Model != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="display: none">ID</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="ProductId" style="display: none">@item.Id</td>
+                        <td class="ProductQty">@item.Quantity</td>
+                        <td>
+                            @{
+                                subQty = item.Quantity;
+                                totalQty += subQty;
+                                subtotal = item.Quantity * item.Price;
+                                total += subtotal;
+                            }
+                            @subtotal
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td style="font-weight:bold;">Total Quantity: @totalQty</td>
+                    <td style="font-weight:bold;">Total Price: @total</td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+</div>
+@*<div class="row">
+    <div class="col-12">
+        <a asp-action="PlaceOrder" asp-controller="Shopping" class="btn btn-success btn-sm mt-2">Place Order</a>
+    </div>
+</div>*@
+<div class="row">
+    <div class="col-12">
+        <a href="#" id="placeOrderBtn" class="btn btn-success btn-sm mt-2">Place Order</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    
+        $("#placeOrderBtn").click(function (e) {
+            
+            e.preventDefault();
+
+            var productIds = [];
+            $(".ProductId").each(function () {
+                productIds.push($(this).text());
+            });
+            var qtys = [];
+            $(".ProductQty").each(function () {
+                qtys.push($(this).text());
+            });
+
+            $.ajax({
+                url: "/Shopping/UpdateQuantities",
+                type: "POST",
+                data: { productIds: productIds, qtys: qtys },
+                traditional: true, 
+                success: function (data) {
+                var returnUrl = '@Url.Action("Index", "Home")';
+                window.location.href = returnUrl;
+                },
+                error: function (error) {
+                    console.log("Error updating quantities:", error);
+                }
+            });
+        });
+</script>
+

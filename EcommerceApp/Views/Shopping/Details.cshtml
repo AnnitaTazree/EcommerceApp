@@ -1,0 +1,71 @@
+﻿@model EcommerceApp.Models.Product
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="row">
+    @if (Model != null)
+    {
+        <div class="col-3">
+            <div class="product-area">
+                <div class="product-img">
+                    @{
+                        var b64 = Convert.ToBase64String(Model.Image);
+                        var imgSrc = String.Format("data:image/jpg;base64,{0}", b64);
+                    }
+                    <img src="@imgSrc" alt="Product Image" />
+                </div>
+                <p>Product Name: @Html.DisplayFor(x=>Model.Name)</p>
+                <p>Price: @Html.DisplayFor(x=>Model.Price)</p>
+                <p>Quantity: @Html.DisplayFor(x=>Model.Quantity)</p>
+                <div class="quantity">
+                    <form asp-action="AddToCart" asp-controller="Shopping" method="post" class="form-control">
+                        <input type="hidden" name="productId" value="@Model.Id">
+                        <input type="number" name="productQuantity" style="width:100px;" value="1" min="1" max="500">
+                        <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@*<div class="row">
+    <div class="col">
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(x=>item.Name)</td>
+                        <td>@Html.DisplayFor(x=>item.Unit)</td>
+                        <td>@Html.DisplayFor(x=>item.Price)</td>
+                        <td>
+                            @{
+                                var b64 = Convert.ToBase64String(item.Image);
+                                var imgSrc = String.Format("data:image/jpg;base64,{0}", b64);
+                            }
+                            <img src="@imgSrc" alt="Product Image" style="width:50px;" />
+                        </td>
+                        <td>
+                            <form asp-action="AddToCart" asp-controller="Shopping" method="post" class="form-control">
+                                <input type="hidden" name="pid" value="@item.Id">
+                                <input type="number" name="qty" style="width:100px;" value="1" min="1" max="500">
+                                <button type="submit" class="btn btn-success btn-sm">Add To Cart</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>*@
+
